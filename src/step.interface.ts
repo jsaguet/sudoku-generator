@@ -1,5 +1,5 @@
 export interface Step {
-    addedNumber: number,
+    position: [number, number],
     excludedNumbers: Set<number>,
     board: number[][];
 }

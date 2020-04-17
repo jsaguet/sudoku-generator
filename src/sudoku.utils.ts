@@ -1,4 +1,4 @@
-import {firstStep} from './constants';
+import {boardLength, firstStep} from './constants';
 import {copyBoard, copySet} from './copy.utils';
 import {Step} from './step.interface';
 
@@ -23,7 +23,7 @@ function pickANumber(board: number[][], [line, column]: [number, number], exclud
         return number;
     }
     excludedList.add(number);
-    if (excludedList.size === 9) {
+    if (excludedList.size === boardLength) {
         return -1; // no possible number found
     }
     return pickANumber(copyBoard(board), [line, column], copySet(excludedList));
@@ -59,35 +59,41 @@ function removeSteps(steps: Map<number, Step>): Step {
     steps.delete(steps.size);
 
     const lastStep: Step = steps.get(steps.size);
-    if (lastStep.excludedNumbers.size === 9) {
+    if (lastStep.excludedNumbers.size === boardLength) {
         return removeSteps(steps);
     }
     return lastStep;
 }
 
-export function fillBoard(step: Step = firstStep, steps: Map<number, Step> = new Map<number, Step>()): number[][] {
-    const {excludedNumbers, board} = step;
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board[i].length; j++) {
-            if (board[i][j] !== 0) {
-                continue;
-            }
-            const number = pickANumber(copyBoard(board), [i, j], copySet(excludedNumbers));
-            if (number === -1) {
-                const newStep = removeSteps(steps);
-                return fillBoard(newStep, steps);
-            }
-            const lastStep = steps.get(steps.size);
-            if (lastStep) {
-                lastStep.excludedNumbers.add(number);
-            }
-            board[i][j] = number;
-            steps.set(steps.size + 1, {addedNumber: number, excludedNumbers: new Set(), board: copyBoard(board)});
-            if (i === board.length - 1 && j === board[i].length - 1) {
-                return board;
-            }
-            return fillBoard(steps.get(steps.size), steps);
-        }
+export function fillBoard(
+    {excludedNumbers, board, position}: Step = firstStep,
+    steps: Map<number, Step> = new Map<number, Step>()
+): number[][] {
+    const [previousLine, previousColumn] = position;
+
+    const column = (previousColumn + 1) % boardLength;
+    const line = column === 0 ? previousLine + 1 : previousLine;
+
+    const number = pickANumber(copyBoard(board), [line, column], copySet(excludedNumbers));
+    if (number === -1) {
+        const newStep = removeSteps(steps);
+        return fillBoard(newStep, steps);
+    }
+    board[line][column] = number;
+
+    if (line === boardLength - 1 && column === boardLength - 1) {
+        return board; // Board is filled
     }
 
+    const lastStep = steps.get(steps.size);
+    if (lastStep) {
+        lastStep.excludedNumbers.add(number);
+    }
+    steps.set(steps.size + 1, {
+        position: [line, column],
+        excludedNumbers: new Set(),
+        board: copyBoard(board)
+    });
+
+    return fillBoard(steps.get(steps.size), steps);
 }
