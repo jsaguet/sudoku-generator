@@ -1,5 +1,5 @@
 import {firstStep} from './constants';
-import {copyBoard, copySet} from './copy-utils';
+import {copyBoard, copySet} from './copy.utils';
 import {Step} from './step.interface';
 
 export function printBoard(grid: number[][]): void {
