@@ -1,2 +1,6 @@
 ### How to run the script ?
-Run `ts-node src/main.ts`
+Use the following commands:
+
+`yarn` to install dependencies.
+
+`ts-node src/main.ts` to run the script
