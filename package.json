@@ -1,13 +1,13 @@
 {
-  "name": "sudoku",
+  "name": "sudoku-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generates a sudoku grid",
   "main": "src/main.ts",
   "scripts": {
     "run": "ts-node src/main.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Julien Saguet",
   "license": "ISC",
   "dependencies": {
     "ts-node": "8.8.2",
